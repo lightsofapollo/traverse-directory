@@ -8,6 +8,10 @@ suite('error', function() {
       var sentError = false;
       var sentComplete = false;
 
+      subject.directory(function(source, target, next) {
+        next(cloneDir.readdir, target, next)
+      });
+
       subject.once('complete', function() {
         sentError = true;
       });

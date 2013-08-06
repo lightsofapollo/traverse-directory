@@ -114,8 +114,48 @@ CloneDirectory.readdir = function(clone, source, target, callback) {
   });
 };
 
+/**
+ * Copies a single directory (no contents) from source to target [mkdir].
+ * Additionally the directory is read for future actions.
+ *
+ * @param {CloneDirectory} clone for action.
+ * @param {String} source for action.
+ * @param {String} target for action.
+ * @param {Function} callback for this action.
+ */
+CloneDirectory.copydir = function(clone, source, target, callback) {
+  fs.mkdir(target, function(err) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    CloneDirectory.readdir(clone, source, target, callback);
+  });
+};
+
+/**
+ * Copies a file from source to dest.
+ *
+ * @param {CloneDirectory} clone for action.
+ * @param {String} source for action.
+ * @param {String} target for action.
+ * @param {Function} callback for this action.
+ */
+CloneDirectory.copyfile = function(clone, source, target, callback) {
+  var read = fs.createReadStream(source);
+  var write = fs.createWriteStream(target);
+
+  read.pipe(write);
+
+  write.once('finish', callback);
+  write.once('error', callback);
+};
+
 /***
  * `symlink` action works in both the directory and file cases.
+ *
+ * NOTE: mostly here so its really obvious you can do this.
  *
  * @param {CloneDirectory} clone for action.
  * @param {String} source for action.
@@ -220,7 +260,7 @@ CloneDirectory.prototype = {
       this.once('complete', callback);
     }
 
-    this.next(CloneDirectory.readdir, this.source, this.target);
+    this.handleDirectory(this.source, this.target, this.next.bind(this));
   }
 };
 
