@@ -43,9 +43,26 @@ CloneDirectory.readdir = function(clone, source, target, callback) {
    */
   function checkComplete() {
     if (pending === 0) {
-      callback();
+      callback && callback();
       return;
     }
+  }
+
+  /**
+   * If given argument is truthy send argument to callback.
+   *
+   * @private
+   * @param {Object|Null} err to validate.
+   * @return {Boolean} true on error false otherwise
+   */
+  function handleError(err) {
+    if (err) {
+      callback(err);
+      callback = null;
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -59,6 +76,9 @@ CloneDirectory.readdir = function(clone, source, target, callback) {
   function stat(pathSource, pathTarget) {
     // stat the leaf
     fs.stat(pathSource, function(err, stat) {
+      if (handleError(err))
+        return;
+
       // deal with the file vs directory handlers.
       if (stat.isFile()) {
         clone.handleFile(pathSource, pathTarget, next);
@@ -76,6 +96,9 @@ CloneDirectory.readdir = function(clone, source, target, callback) {
 
   // read the source directory and build paths
   fs.readdir(source, function(err, list) {
+    if (handleError(err))
+      return false;
+
     pending = list.length;
 
     list.forEach(function(path) {
@@ -100,6 +123,11 @@ CloneDirectory.prototype = {
   pending: 0,
 
   /**
+   * @type {Object|Null} last error.
+   */
+  error: null,
+
+  /**
    * Runs the next item in the stack.
    *
    * If the handler is falsy this will abort in success.
@@ -115,8 +143,17 @@ CloneDirectory.prototype = {
 
     this.pending++;
 
-    handler(this, source, target, function() {
+    handler(this, source, target, function(err) {
+      if (err) {
+        this.error = err;
+      }
+
       if (--this.pending === 0) {
+        if (this.error) {
+          this.emit('error', this.error);
+          return;
+        }
+
         this.emit('complete');
       }
     }.bind(this));
@@ -167,6 +204,7 @@ CloneDirectory.prototype = {
    */
   run: function(callback) {
     if (callback) {
+      this.once('error', callback);
       this.once('complete', callback);
     }
 
