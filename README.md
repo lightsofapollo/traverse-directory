@@ -1,4 +1,5 @@
 traverse-directory
 ===============
 
-Clone directories with various options on how to copy/symlink files and directories.
+Traverse directories with various ways of reading/copying/symlink directories.
+The intent is primarily cases where you want to do complex cloning of one directory into another. 
