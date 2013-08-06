@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     fsPath = require('path');
 
 /**
