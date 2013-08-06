@@ -1,0 +1,30 @@
+{
+  "name": "clone-directory",
+  "version": "0.0.0",
+  "description": "Clone directorys using copy/symlink",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lightsofapollo/clone-directory.git"
+  },
+  "keywords": [
+    "clone",
+    "cp",
+    "-r",
+    "mkdir",
+    "symlink",
+    "directory",
+    "fs"
+  ],
+  "author": "James Lal [:lightsofapollo]",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/lightsofapollo/clone-directory/issues"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0"
+  }
+}
