@@ -1,4 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
+    debug = require('debug')('traverse-directory'),
     fs = require('graceful-fs'),
     fsPath = require('path');
 
@@ -17,6 +18,7 @@ function Traverse(source, target) {
     return new Traverse(source, target);
 
   EventEmitter.call(this);
+  debug('init', { source: source, target: target });
 
   this.source = source;
   this.target = target;
@@ -31,6 +33,7 @@ function Traverse(source, target) {
  * @param {Function} callback initiates the next action.
  */
 Traverse.readdir = function(traverse, source, target, callback) {
+  debug('readdir', source, target);
   // next is our magic state tracking not callback.
   var next = traverse.next.bind(traverse);
 
@@ -57,6 +60,7 @@ Traverse.readdir = function(traverse, source, target, callback) {
    */
   function handleError(err) {
     if (err) {
+      debug('err', err);
       callback(err);
       callback = null;
       return true;
@@ -124,6 +128,7 @@ Traverse.readdir = function(traverse, source, target, callback) {
  * @param {Function} callback for this action.
  */
 Traverse.copydir = function(traverse, source, target, callback) {
+  debug('copydir', source, target);
   fs.mkdir(target, function(err) {
     if (err) {
       callback(err);
@@ -148,7 +153,7 @@ Traverse.copyfile = function(traverse, source, target, callback) {
 
   read.pipe(write);
 
-  write.once('finish', callback);
+  write.once('close', callback);
   write.once('error', callback);
 };
 

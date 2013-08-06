@@ -30,6 +30,7 @@
     "remove": "~0.1.5"
   },
   "dependencies": {
-    "graceful-fs": "~2.0.0"
+    "graceful-fs": "~2.0.0",
+    "debug": "*"
   }
 }
