@@ -152,20 +152,6 @@ Traverse.copyfile = function(traverse, source, target, callback) {
   write.once('error', callback);
 };
 
-/***
- * `symlink` action works in both the directory and file cases.
- *
- * NOTE: mostly here so its really obvious you can do this.
- *
- * @param {Traverse} traverse for action.
- * @param {String} source for action.
- * @param {String} target for action.
- * @param {Function} callback for this action.
- */
-Traverse.symlink = function(traverse, source, target, callback) {
-  fs.symlink(source, target, callback);
-};
-
 Traverse.prototype = {
   __proto__: EventEmitter.prototype,
 
