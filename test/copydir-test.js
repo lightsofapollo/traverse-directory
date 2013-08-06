@@ -1,5 +1,5 @@
 suite('copydir', function() {
-  var cloneDir = require('../');
+  var traverseDir = require('../');
   var source = FIXTURES + '/read/';
   var target = FIXTURES + '/read-out/';
   var remove = require('remove');
@@ -28,17 +28,17 @@ suite('copydir', function() {
   function readTree(root, callback) {
     root = fsPath.normalize(root);
     var output = {};
-    var clone = cloneDir(root, '/dev/null');
+    var traverse = traverseDir(root, '/dev/null');
 
-    clone.file(function(source) {
+    traverse.file(function(source) {
       output[source.replace(root, '')] = fs.readFileSync(source, 'utf8');
     });
 
-    clone.directory(function(source, target, next) {
-      next(cloneDir.readdir, source, target);
+    traverse.directory(function(source, target, next) {
+      next(traverseDir.readdir, source, target);
     });
 
-    clone.run(callback);
+    traverse.run(callback);
     return output;
   }
 
@@ -50,17 +50,17 @@ suite('copydir', function() {
 
   // copy the contents of all files/directories
   setup(function(done) {
-    var clone = cloneDir(source, target);
+    var traverse = traverseDir(source, target);
 
-    clone.file(function(source, target, next) {
-      next(cloneDir.copyfile, source, target);
+    traverse.file(function(source, target, next) {
+      next(traverseDir.copyfile, source, target);
     });
 
-    clone.directory(function(source, target, next) {
-      next(cloneDir.copydir, source, target);
+    traverse.directory(function(source, target, next) {
+      next(traverseDir.copydir, source, target);
     });
 
-    clone.run(done);
+    traverse.run(done);
   });
 
   var output;

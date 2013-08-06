@@ -1,5 +1,5 @@
 suite('copyfile action', function() {
-  var cloneDir = require('../');
+  var traverseDir = require('../');
   var fs = require('fs');
 
   var source = FIXTURES + '/read/a/a.js';
@@ -12,9 +12,9 @@ suite('copyfile action', function() {
   });
 
   test('copies contents from source to target', function(done) {
-    var clone = cloneDir();
+    var traverse = traverseDir();
 
-    cloneDir.symlink({}, source, target, function(err) {
+    traverseDir.symlink({}, source, target, function(err) {
       assert.equal(
         fs.readFileSync(target, 'utf8'),
         fs.readFileSync(source, 'utf8')

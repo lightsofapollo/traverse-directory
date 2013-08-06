@@ -1,20 +1,20 @@
 suite('read', function() {
   var subject;
-  var cloneDir = require('../');
+  var traverseDir = require('../');
   var fixtures = __dirname + '/fixtures/';
 
-  function aggregateWithClone(clone) {
+  function aggregateWithClone(traverse) {
     var result = [];
     // handle files by simply saving the record of each
-    clone.file(function(source, target, next) {
+    traverse.file(function(source, target, next) {
       result.push(source);
       // skip no action needed for this one
       next();
     });
 
     // directories simply scan
-    clone.directory(function(source, target, next) {
-      next(cloneDir.readdir, source, target);
+    traverse.directory(function(source, target, next) {
+      next(traverseDir.readdir, source, target);
     });
 
     return result;
@@ -24,13 +24,13 @@ suite('read', function() {
     var root = fixtures + 'read/';
     var result;
     setup(function(done) {
-      // define the clone (in this case we only read)
-      subject = cloneDir(root, '/dev/null');
+      // define the traverse (in this case we only read)
+      subject = traverseDir(root, '/dev/null');
 
       // aggregate results.
       result = aggregateWithClone(subject);
 
-      // execute the clone
+      // execute the traverse
       subject.run(done);
     });
 
@@ -53,7 +53,7 @@ suite('read', function() {
     var result;
 
     setup(function(done) {
-      subject = new cloneDir(fixtures + '/empty/', '/dev/null');
+      subject = new traverseDir(fixtures + '/empty/', '/dev/null');
       result = aggregateWithClone(subject, done);
       subject.run(done);
     });

@@ -1,15 +1,15 @@
 suite('error', function() {
-  var cloneDir = require('../');
+  var traverseDir = require('../');
   var root = __dirname + '/fixtures/';
 
-  suite('attempting to clone missing directory', function() {
+  suite('attempting to traverse missing directory', function() {
     test('it should emit error event', function(done) {
-      var subject = cloneDir(root + '/foobar/', '/dev/null');
+      var subject = traverseDir(root + '/foobar/', '/dev/null');
       var sentError = false;
       var sentComplete = false;
 
       subject.directory(function(source, target, next) {
-        next(cloneDir.readdir, target, next)
+        next(traverseDir.readdir, target, next)
       });
 
       subject.once('complete', function() {

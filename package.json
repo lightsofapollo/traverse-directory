@@ -1,7 +1,7 @@
 {
-  "name": "clone-directory",
+  "name": "traverse-directory",
   "version": "0.0.1",
-  "description": "Clone directorys using copy/symlink",
+  "description": "Clone directories using copy/symlink",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha"
@@ -17,7 +17,8 @@
     "mkdir",
     "symlink",
     "directory",
-    "fs"
+    "fs",
+    "traverse"
   ],
   "author": "James Lal [:lightsofapollo]",
   "license": "Apache 2.0",

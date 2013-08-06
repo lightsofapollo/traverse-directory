@@ -1,5 +1,5 @@
 suite('symlink a directory and a file', function() {
-  var cloneDir = require('../');
+  var traverseDir = require('../');
   var fs = require('fs');
 
   var source = FIXTURES;
@@ -12,9 +12,9 @@ suite('symlink a directory and a file', function() {
   });
 
   test('symlink fixtures to fixtures-sym', function(done) {
-    var clone = cloneDir();
+    var traverse = traverseDir();
 
-    cloneDir.symlink({}, source, target, function(err) {
+    traverseDir.symlink({}, source, target, function(err) {
       if (err) return done(err);
       var stat = fs.lstatSync(target);
       assert.ok(stat.isSymbolicLink(), target + ' is symlink');

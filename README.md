@@ -1,4 +1,4 @@
-clone-directory
+traverse-directory
 ===============
 
-Clone directory with various options on how to copy/symlink files and directories.
+Clone directories with various options on how to copy/symlink files and directories.

@@ -3,18 +3,18 @@ var EventEmitter = require('events').EventEmitter,
     fsPath = require('path');
 
 /**
- * Initiates a clone object. The use of `new` is optional:
+ * Initiates a traverse object. The use of `new` is optional:
  *
- *    var cloneDir = require('clone-directory');
- *    var dir = cloneDir();
+ *    var traverseDir = require('traverse-directory');
+ *    var dir = traverseDir();
  *
  * @constructor
- * @param {String} source to clone.
- * @param {String} target of the clone.
+ * @param {String} source to traverse.
+ * @param {String} target of the traverse.
  */
-function CloneDirectory(source, target) {
-  if (!(this instanceof CloneDirectory))
-    return new CloneDirectory(source, target);
+function Traverse(source, target) {
+  if (!(this instanceof Traverse))
+    return new Traverse(source, target);
 
   EventEmitter.call(this);
 
@@ -25,14 +25,14 @@ function CloneDirectory(source, target) {
 /**
  * `readdir` action designed to continue descent into a given directory.
  *
- * @param {CloneDirectory} clone instance.
+ * @param {Traverse} traverse instance.
  * @param {String} source directory.
  * @param {String} target directory.
  * @param {Function} callback initiates the next action.
  */
-CloneDirectory.readdir = function(clone, source, target, callback) {
+Traverse.readdir = function(traverse, source, target, callback) {
   // next is our magic state tracking not callback.
-  var next = clone.next.bind(clone);
+  var next = traverse.next.bind(traverse);
 
   // number of remaining operations
   var pending = 0;
@@ -81,9 +81,9 @@ CloneDirectory.readdir = function(clone, source, target, callback) {
 
       // deal with the file vs directory handlers.
       if (stat.isFile()) {
-        clone.handleFile(pathSource, pathTarget, next);
+        traverse.handleFile(pathSource, pathTarget, next);
       } else if(stat.isDirectory()) {
-        clone.handleDirectory(pathSource, pathTarget, next);
+        traverse.handleDirectory(pathSource, pathTarget, next);
       }
 
       // remove a pending item from the stack.
@@ -118,31 +118,31 @@ CloneDirectory.readdir = function(clone, source, target, callback) {
  * Copies a single directory (no contents) from source to target [mkdir].
  * Additionally the directory is read for future actions.
  *
- * @param {CloneDirectory} clone for action.
+ * @param {Traverse} traverse for action.
  * @param {String} source for action.
  * @param {String} target for action.
  * @param {Function} callback for this action.
  */
-CloneDirectory.copydir = function(clone, source, target, callback) {
+Traverse.copydir = function(traverse, source, target, callback) {
   fs.mkdir(target, function(err) {
     if (err) {
       callback(err);
       return;
     }
 
-    CloneDirectory.readdir(clone, source, target, callback);
+    Traverse.readdir(traverse, source, target, callback);
   });
 };
 
 /**
  * Copies a file from source to dest.
  *
- * @param {CloneDirectory} clone for action.
+ * @param {Traverse} traverse for action.
  * @param {String} source for action.
  * @param {String} target for action.
  * @param {Function} callback for this action.
  */
-CloneDirectory.copyfile = function(clone, source, target, callback) {
+Traverse.copyfile = function(traverse, source, target, callback) {
   var read = fs.createReadStream(source);
   var write = fs.createWriteStream(target);
 
@@ -157,16 +157,16 @@ CloneDirectory.copyfile = function(clone, source, target, callback) {
  *
  * NOTE: mostly here so its really obvious you can do this.
  *
- * @param {CloneDirectory} clone for action.
+ * @param {Traverse} traverse for action.
  * @param {String} source for action.
  * @param {String} target for action.
  * @param {Function} callback for this action.
  */
-CloneDirectory.symlink = function(clone, source, target, callback) {
+Traverse.symlink = function(traverse, source, target, callback) {
   fs.symlink(source, target, callback);
 };
 
-CloneDirectory.prototype = {
+Traverse.prototype = {
   __proto__: EventEmitter.prototype,
 
   /**
@@ -185,8 +185,8 @@ CloneDirectory.prototype = {
    * If the handler is falsy this will abort in success.
    *
    * @param {Function} handler for this item in the stack.
-   * @param {String} source of clone.
-   * @param {String} target of clone.
+   * @param {String} source of traverse.
+   * @param {String} target of traverse.
    */
   next: function(handler, source, target) {
     if (!handler) {
@@ -250,7 +250,7 @@ CloneDirectory.prototype = {
   },
 
   /**
-   * Begin cloning process.
+   * Begin traversal process.
    *
    * @param {Function} callback [Error err].
    */
@@ -264,4 +264,4 @@ CloneDirectory.prototype = {
   }
 };
 
-module.exports = CloneDirectory;
+module.exports = Traverse;
