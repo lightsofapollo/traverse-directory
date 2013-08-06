@@ -25,53 +25,85 @@ suite('copydir', function() {
    * @param {Function} callback usually mocha's done.
    * @return {Object} key (filename) value (contents) pair.
    */
-  function readTree(root, callback) {
-    root = fsPath.normalize(root);
+  function readTree(root) {
     var output = {};
-    var traverse = traverseDir(root, '/dev/null');
+    root = fsPath.normalize(root);
 
-    traverse.file(function(source) {
-      output[source.replace(root, '')] = fs.readFileSync(source, 'utf8');
+    setup(function(done) {
+      var traverse = traverseDir(root, '/dev/null');
+
+      traverse.file(function(source) {
+        output[source.replace(root, '')] = fs.readFileSync(source, 'utf8');
+      });
+
+      traverse.directory(function(source, target, next) {
+        next(traverseDir.readdir, source, target);
+      });
+
+      traverse.run(done);
     });
 
-    traverse.directory(function(source, target, next) {
-      next(traverseDir.readdir, source, target);
-    });
-
-    traverse.run(callback);
     return output;
   }
 
-  // define the expected output
-  var expected;
-  setup(function(done) {
-    expected = readTree(source, done);
+  /**
+   * Copies the contents of one directory to another.
+   *
+   * @param {String} source to copy.
+   * @param {String} target of copy.
+   */
+  function copyDir(source, target) {
+    setup(function(done) {
+      var traverse = traverseDir(source, target);
+
+      traverse.file(function(source, target, next) {
+        next(traverseDir.copyfile, source, target);
+      });
+
+      traverse.directory(function(source, target, next) {
+        next(traverseDir.copydir, source, target);
+      });
+
+      traverse.run(done);
+    });
+  }
+
+  suite('with creation of target dir', function() {
+    // define the expected output
+    var expected = readTree(source);
+    // copy the source
+    copyDir(source, target);
+    // read contents of output
+    var output = readTree(target);
+
+    test('result of copy', function() {
+      assert.deepEqual(
+        expected,
+        output
+      );
+    });
   });
 
-  // copy the contents of all files/directories
-  setup(function(done) {
-    var traverse = traverseDir(source, target);
+  suite('without the creation of target dir', function() {
+    // define the expected output
+    var expected = readTree(source);
 
-    traverse.file(function(source, target, next) {
-      next(traverseDir.copyfile, source, target);
+    // mkdir the target
+    setup(function() {
+      fs.mkdirSync(target);
     });
 
-    traverse.directory(function(source, target, next) {
-      next(traverseDir.copydir, source, target);
+    // copy the source
+    copyDir(source, target);
+    // read contents of output
+    var output = readTree(target);
+
+    test('result of copy', function() {
+      assert.deepEqual(
+        expected,
+        output
+      );
     });
-
-    traverse.run(done);
   });
 
-  var output;
-  setup(function(done) {
-    output = readTree(target, done);
-  });
-
-  test('result of copy', function() {
-    assert.deepEqual(
-      expected,
-      output
-    );
-  });
 });

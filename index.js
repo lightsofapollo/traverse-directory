@@ -130,7 +130,8 @@ Traverse.readdir = function(traverse, source, target, callback) {
 Traverse.copydir = function(traverse, source, target, callback) {
   debug('copydir', source, target);
   fs.mkdir(target, function(err) {
-    if (err) {
+    // if a directory already exists thats fine
+    if (err && err.code !== 'EEXIST') {
       callback(err);
       return;
     }
