@@ -28,7 +28,7 @@ function CloneDirectory(source, target) {
  * @param {CloneDirectory} clone instance.
  * @param {String} source directory.
  * @param {String} target directory.
- * @param {Function} next initiates the next action.
+ * @param {Function} callback initiates the next action.
  */
 CloneDirectory.readdir = function(clone, source, target, callback) {
   // next is our magic state tracking not callback.
@@ -112,6 +112,18 @@ CloneDirectory.readdir = function(clone, source, target, callback) {
 
     checkComplete();
   });
+};
+
+/***
+ * `symlink` action works in both the directory and file cases.
+ *
+ * @param {CloneDirectory} clone for action.
+ * @param {String} source for action.
+ * @param {String} target for action.
+ * @param {Function} callback for this action.
+ */
+CloneDirectory.symlink = function(clone, source, target, callback) {
+  fs.symlink(source, target, callback);
 };
 
 CloneDirectory.prototype = {
