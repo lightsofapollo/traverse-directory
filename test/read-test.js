@@ -1,7 +1,7 @@
 suite('read', function() {
   var subject;
   var traverseDir = require('../');
-  var fixtures = __dirname + '/fixtures/';
+  var fs = require('fs');
 
   function aggregateWithClone(traverse) {
     var result = [];
@@ -21,7 +21,7 @@ suite('read', function() {
   }
 
   suite('when root directory exists', function() {
-    var root = fixtures + 'read/';
+    var root = FIXTURES + 'read/';
     var result;
     setup(function(done) {
       // define the traverse (in this case we only read)
@@ -51,9 +51,19 @@ suite('read', function() {
 
   suite('empty directory', function() {
     var result;
+    var empty = FIXTURES + '/empty/';
+
+    teardown(function() {
+      if (fs.existsSync(empty)) {
+        fs.rmdirSync(empty);
+      }
+    });
 
     setup(function(done) {
-      subject = new traverseDir(fixtures + '/empty/', '/dev/null');
+      // create an empty dir to test.
+      fs.mkdirSync(empty);
+
+      subject = new traverseDir(empty, '/dev/null');
       result = aggregateWithClone(subject, done);
       subject.run(done);
     });

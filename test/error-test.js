@@ -1,10 +1,10 @@
 suite('error', function() {
   var traverseDir = require('../');
-  var root = __dirname + '/fixtures/';
+  var fs = require('fs');
 
   suite('attempting to traverse missing directory', function() {
     test('it should emit error event', function(done) {
-      var subject = traverseDir(root + '/foobar/', '/dev/null');
+      var subject = traverseDir(FIXTURES + '/foobar/', '/dev/null');
       var sentError = false;
       var sentComplete = false;
 

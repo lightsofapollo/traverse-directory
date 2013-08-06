@@ -14,7 +14,7 @@ suite('copyfile action', function() {
   test('copies contents from source to target', function(done) {
     var traverse = traverseDir();
 
-    traverseDir.symlink({}, source, target, function(err) {
+    traverseDir.copyfile({}, source, target, function(err) {
       assert.equal(
         fs.readFileSync(target, 'utf8'),
         fs.readFileSync(source, 'utf8')
