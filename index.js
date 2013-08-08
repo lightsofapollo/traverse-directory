@@ -153,9 +153,32 @@ Traverse.copyfile = function(traverse, source, target, callback) {
   var write = fs.createWriteStream(target);
 
   read.pipe(write);
+  write.on('error', callback);
+  write.on('close', callback);
+};
 
-  write.once('close', callback);
-  write.once('error', callback);
+/**
+ * Symlink a file from source to target.
+ *
+ * @param {Traverse} traverse for action.
+ * @param {String} source for action.
+ * @param {String} target for action.
+ * @param {Function} callback for this action.
+ */
+Traverse.symlinkfile = function(traverse, source, target, callback) {
+  fs.symlink(source, target, 'file', callback);
+};
+
+/**
+ * Symlink a directory from source to target.
+ *
+ * @param {Traverse} traverse for action.
+ * @param {String} source for action.
+ * @param {String} target for action.
+ * @param {Function} callback for this action.
+ */
+Traverse.symlinkdir = function(traverse, source, target, callback) {
+  fs.symlink(source, target, 'dir',callback);
 };
 
 Traverse.prototype = {
