@@ -30,12 +30,12 @@ function Traverse(source, target) {
  * @param {Traverse} traverse instance.
  * @param {String} source directory.
  * @param {String} target directory.
- * @param {Function} callback initiates the next action.
+ * @param {Function} callback initiates the runOp action.
  */
 Traverse.readdir = function(traverse, source, target, callback) {
   debug('readdir', source, target);
-  // next is our magic state tracking not callback.
-  var next = traverse.next.bind(traverse);
+  // runOp is our magic state tracking not callback.
+  var runOp = traverse.runOp.bind(traverse);
 
   // number of remaining operations
   var pending = 0;
@@ -73,8 +73,8 @@ Traverse.readdir = function(traverse, source, target, callback) {
    * Wrapper around fs.stat which decides how to process a given leaf.
    *
    *
-   * @param {String} pathSource for next action.
-   * @param {String} pathTarget for next action.
+   * @param {String} pathSource for runOp action.
+   * @param {String} pathTarget for runOp action.
    * @private
    */
   function stat(pathSource, pathTarget) {
@@ -85,9 +85,9 @@ Traverse.readdir = function(traverse, source, target, callback) {
 
       // deal with the file vs directory handlers.
       if (stat.isFile()) {
-        traverse.handleFile(pathSource, pathTarget, next);
+        traverse.handleFile(pathSource, pathTarget, runOp);
       } else if(stat.isDirectory()) {
-        traverse.handleDirectory(pathSource, pathTarget, next);
+        traverse.handleDirectory(pathSource, pathTarget, runOp);
       }
 
       // remove a pending item from the stack.
@@ -195,7 +195,7 @@ Traverse.prototype = {
   error: null,
 
   /**
-   * Runs the next item in the stack.
+   * Runs the runOp item in the stack.
    *
    * If the handler is falsy this will abort in success.
    *
@@ -203,7 +203,7 @@ Traverse.prototype = {
    * @param {String} source of traverse.
    * @param {String} target of traverse.
    */
-  next: function(handler, source, target) {
+  runOp: function(handler, source, target) {
     if (!handler) {
       return;
     }
@@ -275,7 +275,7 @@ Traverse.prototype = {
       this.once('complete', callback);
     }
 
-    this.handleDirectory(this.source, this.target, this.next.bind(this));
+    this.handleDirectory(this.source, this.target, this.runOp.bind(this));
   }
 };
 
