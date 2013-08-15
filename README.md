@@ -13,7 +13,6 @@ Traverse directory is an async queue. Each operation is added to the
 queue (but operations run in parallel) and when no more operations are
 left on the queue the traverse directory is complete.
 
-Setting up the traversal is the first step:
 
 ```js
 var TraverseDirectory = require('traverse-directory');
