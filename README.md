@@ -66,8 +66,17 @@ traverse.on('complete', ...);
 
 ## Actions
 
-The "next" argument above takes an action for examples on how to
-write actions see index.js.
+The "next" argument above takes an action as the first argument.
+
+```js
+TraverseDirectory = require('traverse-directory');
+// ...
+
+// somewhere in the directory or file methods.
+next(TraverseDirectory[ACTION_NAME], source, target);
+```
+
+For examples on how to write actions see index.js.
 
 ## For files:
 
@@ -80,7 +89,7 @@ symlinks file from source to dest
 ## For directories:
 
 ### TraverseDirectory.readdir
-reads all files in directory (triggers the call to file)
+reads all files in directory (triggers the call to traverse.file)
 
 ### TraverseDirectory.copydir
 Calls readdir and creates a directory in the target path.
