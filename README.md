@@ -36,6 +36,9 @@ traverse.directory(function(source, target, next) {
   the "next" argument is a function which expects three arguments
   which handle how the source / target are handled.
 
+  You must call next() to indicate that the item has been handled.
+  If you have no action to take, just call next() with no arguments.
+
   @param {Function} action (see below) to handle source/target.
   @param {String} source path.
   @param {String} target path.
@@ -43,8 +46,8 @@ traverse.directory(function(source, target, next) {
   next(TraverseDirectory.copydir, source, target);
 });
 
-/** 
-Handle file found in a directory. Unlike the directory 
+/**
+Handle file found in a directory. Unlike the directory
 command file is optional (though generally needed).
 
 @param {String} source directory.
@@ -74,6 +77,10 @@ TraverseDirectory = require('traverse-directory');
 
 // somewhere in the directory or file methods.
 next(TraverseDirectory[ACTION_NAME], source, target);
+
+// If you are doing something inline that doesn't need handing
+// off to an action, just call without arguments
+next();
 ```
 
 For examples on how to write actions see index.js.
