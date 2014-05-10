@@ -78,6 +78,7 @@ Traverse.readdir = function(traverse, source, target, callback) {
    * @private
    */
   function stat(pathSource, pathTarget) {
+    debug('stat', pathSource, pathTarget);
     // stat the leaf
     fs.stat(pathSource, function(err, stat) {
       if (handleError(err))
@@ -149,6 +150,7 @@ Traverse.copydir = function(traverse, source, target, callback) {
  * @param {Function} callback for this action.
  */
 Traverse.copyfile = function(traverse, source, target, callback) {
+  debug('copyfile', source, target);
   var read = fs.createReadStream(source);
   var write = fs.createWriteStream(target);
 
@@ -166,6 +168,7 @@ Traverse.copyfile = function(traverse, source, target, callback) {
  * @param {Function} callback for this action.
  */
 Traverse.symlinkfile = function(traverse, source, target, callback) {
+  debug('symlinkfile', source, target);
   fs.symlink(source, target, 'file', callback);
 };
 
@@ -178,7 +181,8 @@ Traverse.symlinkfile = function(traverse, source, target, callback) {
  * @param {Function} callback for this action.
  */
 Traverse.symlinkdir = function(traverse, source, target, callback) {
-  fs.symlink(source, target, 'dir',callback);
+  debug('symlinkdir', source, target);
+  fs.symlink(source, target, 'dir', callback);
 };
 
 Traverse.prototype = {
@@ -205,10 +209,9 @@ Traverse.prototype = {
    */
   runOp: function(handler, source, target) {
     if (!handler) {
+      this.pending--;
       return;
     }
-
-    this.pending++;
 
     handler(this, source, target, function(err) {
       if (err) {
@@ -237,7 +240,7 @@ Traverse.prototype = {
    * Default directory handler.
    */
   handleDirectory: function() {
-    throw new Error('call .directory to add a diectory handler');
+    throw new Error('call .directory to add a directory handler');
   },
 
   /**
@@ -249,7 +252,10 @@ Traverse.prototype = {
     if (typeof handler !== 'function')
       throw new Error('handler must be a function.');
 
-    this.handleFile = handler;
+    this.handleFile = function() {
+        this.pending++;
+        handler.apply(this, arguments);
+    };
   },
 
   /**
@@ -261,7 +267,10 @@ Traverse.prototype = {
     if (typeof handler !== 'function')
       throw new Error('handler must be a function.');
 
-    this.handleDirectory = handler;
+    this.handleDirectory = function() {
+        this.pending++;
+        handler.apply(this, arguments);
+    };
   },
 
   /**

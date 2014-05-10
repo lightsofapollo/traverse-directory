@@ -32,8 +32,9 @@ suite('copydir', function() {
     setup(function(done) {
       var traverse = traverseDir(root, '/dev/null');
 
-      traverse.file(function(source) {
+      traverse.file(function(source, target, next) {
         output[source.replace(root, '')] = fs.readFileSync(source, 'utf8');
+        next();
       });
 
       traverse.directory(function(source, target, next) {
